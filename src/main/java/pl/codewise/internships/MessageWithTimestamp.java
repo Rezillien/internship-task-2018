@@ -1,28 +1,25 @@
 package pl.codewise.internships;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class MessageWithTimestamp extends Message {
     private LocalDateTime timestamp;
 
-    public MessageWithTimestamp(String userAgent, int errorCode) {
-        super(userAgent, errorCode);
-        timestamp = LocalDateTime.now();
-    }
+    Clock clock = Clock.systemDefaultZone();
 
-    public MessageWithTimestamp(String userAgent, int errorCode, LocalDateTime timestamp){
-        super(userAgent,errorCode);
-        this.timestamp = timestamp;
-    }
-
-    public MessageWithTimestamp(Message message){
+    public MessageWithTimestamp(Message message, Clock clock){
         super(message.getUserAgent(),message.getErrorCode());
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now(clock);
     }
 
     public boolean isOlderThan(int numberOfMinutes){
-        return Duration.between(timestamp, LocalDateTime.now()).toMinutes() > numberOfMinutes;
+        return Duration.between(timestamp, LocalDateTime.now(clock)).toMinutes() > numberOfMinutes;
+    }
+
+    public void setClock(Clock clock){
+        this.clock = clock;
     }
 
 
