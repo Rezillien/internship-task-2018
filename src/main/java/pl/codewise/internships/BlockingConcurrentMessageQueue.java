@@ -5,15 +5,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class BasicConcurrentMessageQueue implements MessageQueue {
+public class BlockingConcurrentMessageQueue implements MessageQueue {
     private final static int minutesToTimeout = 5;
 
     //non blocking concurrent queue
-    private Queue<MessageWithTimestamp> queue = new ConcurrentLinkedQueue<>();
+    private Queue<MessageWithTimestamp> queue = new LinkedBlockingQueue<MessageWithTimestamp>();
 
     private long errorMessagesCount=0;
 
@@ -51,6 +54,8 @@ public class BasicConcurrentMessageQueue implements MessageQueue {
     }
 
     private void cleanTimeoutMessages(){
+        if(queue.isEmpty())
+            return;
         while(queue.peek().isOlderThan(minutesToTimeout)){
             if(isErrorMessage(queue.peek().getErrorCode())){
                 errorMessagesCount--;
